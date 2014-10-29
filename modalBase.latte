@@ -1,0 +1,41 @@
+<p n:if="$renderAddButton"><a n:href="add!" class="ajax btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span> {$addLabel}</a></p>
+{snippet rowForms}
+
+    {if isset($renderEdit)}		
+	{include modalForm, modalFormTitle => 'Úprava', modalFormName => 'editForm'}
+    {/if}
+    {if isset($renderAdd)}
+	{include modalForm, modalFormTitle => 'Přidání', modalFormName => 'addForm'}
+    {/if}
+{/snippet}
+
+<div n:foreach="$flashes as $flash" class="alert {$flash->type} alert-dismissible">
+    <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+    {$flash->message}
+</div>
+
+
+
+	{include rows}
+
+
+
+{define modalForm}
+<div class="modal fade" id="modal{$modalFormName}" tabindex="-1" role="dialog" aria-labelledby="{$modalFormTitle}">
+    <div class="modal-dialog">
+	<div class="modal-content">
+	    <div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+		<h4 class="modal-title">{$modalFormTitle}</h4>
+	    </div>
+	    <div class="modal-body">
+		<div class="container-fluid">
+		    {control $modalFormName}
+		</div>
+
+	    </div>
+	</div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{/define}

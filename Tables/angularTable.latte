@@ -1,0 +1,199 @@
+<div  ng-controller="{$control->name} as control" >
+
+	<div class="row">
+		<div class=" col-lg-3">
+			<div class="form-group input-group">
+				<input type="text" class="form-control" ng-model="control.search.$" ng-change="control.searchChanged()">
+				<span class="input-group-btn"><button class="btn btn-default" ng-click="control.clearSearch()"><i class="fa fa-times"></i></button></span>
+			</div>
+
+		</div>
+		<div class="col-lg-2" n:syntax="asp">
+			<div class="dropdown keep-open">
+				<button type="button" class="btn btn-default" data-toggle="dropdown"><i class="fa fa-eye"></i> Sloupce  <span class="caret"></span></button>
+				<div class="dropdown-menu">
+					<div class="checkbox container-fluid" ng-repeat="column in control.columnsOrder">
+						<label>
+							<input type="checkbox" ng-model="column.show"> {{column.title}}
+						</label>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<div class=" col-lg-7" n:syntax="asp">
+			<div class="form-group" n:if="count($basicFilters) > 0">
+			<%foreach $basicFilters as $key => $filter%><%include #$filter->getBlockName(), filter => $filter, modelName => $key%><%/foreach%>
+		</div>
+
+	</div>
+
+</div>
+
+
+<div class="table-responsive" n:syntax="asp">
+	<p>Nalezeno záznamů: <span class="badge" ng-cloak>{{control.itemsText}}</span></p>
+
+
+	<table  ng-class="{'table' : 1, 'dataTable' : 1, 'table-striped' : <%$stripped%>, 'table-bordered' : 1, 'table-hover' : 1}" ng-cloak>
+		<thead>
+			<tr>
+
+				<th ng-repeat="column in control.columnsOrder"
+					ng-click="control.toggleSorting(column.field)" 
+					ng-class="{'sorting_asc' : control.sortingField === column.field && !control.sortingReverse, 
+										'sorting_desc' : control.sortingField === column.field && control.sortingReverse, 
+										'sorting' : control.sortingField !== column.field}"
+					ng-show="column.show">
+					{{column.title}}
+				</th>
+				<th n:if="$showButtons">Možnosti</th>
+			</tr>
+
+		</thead>
+		<tbody >
+
+			<tr n:syntax="python" {%if !empty($rowClass)%}ng-class="control.rowClass(row)"{%/if%} ng-repeat="row in control.filteredData | orderBy:control.sortingField:control.sortingReverse | pagination:control.currentPage*control.itemsPerPage:control.itemsPerPage">
+				<td n:syntax="asp" ng-repeat="column in control.columnsOrder" ng-show="column.show">{{control.renderers[control.columns[column.field].type](row[column.field])}}</td>
+				<td n:if="$showButtons" n:syntax="asp" >
+					<span ng-repeat="button in row['_buttons']"><a href="{{button.link}}" class="{{button.class}}"><i class="fa fa-{{button.icon}}" ng-if="button.icon"></i> {{button.text}}</a> </span>
+				</td>
+
+			</tr>
+		</tbody>
+	</table>
+
+	<ul class="pagination" ng-show="control.itemsPerPage != 0" n:syntax="asp" ng-cloak>
+		<li ng-if="control.currentPage > 0" ng-click="control.setCurrentPage(control.currentPage-1)"><a href="">&laquo;</a></li>
+		<li ng-class="{active : control.currentPage == 0 }" ng-click="control.setCurrentPage(0)"><a href="">1</a></li>
+
+		<li ng-if="control.currentPage > 3" class="disabled"><a href="">...</a></li>
+		<li ng-repeat="pageNumber in control.pages" ng-class="{active : control.currentPage == pageNumber}">
+			<a href="" ng-click="control.setCurrentPage(pageNumber)">{{ pageNumber + 1}}</a>
+		</li>
+		<li ng-if="control.currentPage < control.numberOfPages - 2" class="disabled"><a href="">...</a></li>
+		<li ng-if="control.numberOfPages > 1" ng-class="{active : control.currentPage == control.numberOfPages-1}" ng-click="control.setCurrentPage(control.numberOfPages-1)"><a href="">{{control.numberOfPages}}</a></li>
+		<li ng-if="control.currentPage < control.numberOfPages-1" ng-click="control.setCurrentPage(control.currentPage+1)"><a href="">&raquo;</a></li>
+	</ul>
+
+
+	<ul class="pagination" ng-cloak>
+		<li class="disabled"><a href="">Počet řádků:</a></li>
+		<li ng-class="{ active : control.itemsPerPage == 15 }" ng-click="control.setItemsPerPage(15)"><a href="">15</a></li>
+		<li ng-class="{ active : control.itemsPerPage == 30 }" ng-click="control.setItemsPerPage(30)"><a href="">30</a></li>
+		<li ng-class="{ active : control.itemsPerPage == 50 }" ng-click="control.setItemsPerPage(50)"><a href="">50</a></li>
+		<li ng-class="{ active : control.itemsPerPage == 100 }" ng-click="control.setItemsPerPage(100)"><a href="">100</a></li>
+		<li ng-class="{ active : control.itemsPerPage == 0 }" ng-click="control.setItemsPerPage(0)"><a href="">Vše <span class="label label-danger" ng-show="control.itemsCount > 250">pomalé</span></a></li>
+
+	</ul>
+
+</div>
+</div>
+<script n:syntax="double">
+
+	app.controller({{$control->name}}, ['$http', '$scope', '$cookieStore', '$log', 'filterFilter', function ($http, $scope, $cookieStore, $log, filterFilter) {
+			var control = this;
+			this.data = [];
+			this.filteredData = [];
+			this.usePagination = true;
+			this.currentPage = 0;
+			this.numberOfPages = 0;
+			this.itemsPerPage = {{$itemsPerPage}};
+			this.itemsTotal = 0;
+			this.itemsText = 'Načítám data...';
+			this.itemsCount = 0;
+			this.pages = [];
+			$http.get({{$dataSourceLink}}).success(function (data) {
+				control.data = data;
+				control.filteredData = data;
+				control.itemsTotal = control.data.length;
+				control.updatePagination();
+			}).error(function () {
+				alert('Problém s načítáním dat');
+			});
+			this.updatePagination = function () {
+				control.itemsCount = control.filteredData.length;
+				control.itemsText = control.itemsTotal > control.itemsCount ? control.itemsTotal + " (vyhledáno: " + control.itemsCount + ")" : control.itemsTotal;
+				if (control.itemsPerPage > 0) {
+					control.numberOfPages = Math.ceil(control.itemsCount / control.itemsPerPage);
+					control.updatePages();
+				}
+			};
+	{{if $rowClass != ""}}
+		{{!$rowClass}};
+	{{/if}}
+
+			this.setCurrentPage = function (page) {
+				control.currentPage = page;
+				control.updatePages();
+			};
+			this.updatePages = function () {
+				control.pages = [];
+				var pagesBack = control.currentPage > 2 ? 2 : control.currentPage - 1;
+				var pagesForward = control.currentPage < control.numberOfPages - 3 ? 2 : (control.numberOfPages - 1) - control.currentPage - 1;
+				for (var i = control.currentPage - pagesBack; i <= control.currentPage + pagesForward; i++) {
+					control.pages.push(i);
+				}
+			};
+			this.searchChanged = function () {
+				control.filteredData = filterFilter(control.data, control.search);
+				control.filteredData = filterFilter(control.filteredData, control.searchStrict, 1);
+				control.currentPage = 0;
+				control.updatePagination();
+			};
+			
+			this.clearSearch = function () {
+				control.search = null;
+				control.searchChanged();
+			};
+			this.setItemsPerPage = function (itemsPerPage) {
+				control.itemsPerPage = itemsPerPage;
+				control.updatePagination();
+			};
+			this.sortingField = {{$sortingField[0]}};
+			this.sortingReverse = {{$sortingField[1]}};
+					this.columnsOrder = [ {{foreach $columns as $column}} { "field": {{$column->field}}, "title": {{$column->title}}, "show" : {{$column->default}} }, {{/foreach}}];
+					this.columns = {
+	{{foreach $columns as $column}}
+		{{$column->field}}: {"field": {{$column->field}}, "title": {{$column->title}}, "type": {{$column->type}}, "show": {{$column->default}}, "noSort": {{$column->noSort}}},
+	{{/foreach}}
+					};
+
+
+			this.renderers = {
+				"text": function (value) {
+					return value;
+				},
+				"e-mail": function (value) {
+					return value;
+				},
+				"boolean": function (value) {
+					return value ? 'Ano' : 'Ne';
+				}
+			};
+			this.toggleSorting = function (field) {
+				if (control.sortingField === field) {
+					control.sortingReverse = !control.sortingReverse;
+				} else {
+					control.sortingReverse = false;
+					control.sortingField = field;
+				}
+
+			}
+			;
+		}]);
+
+
+</script>
+
+{define defaultFilter}
+{/define}
+
+{define selectFilter}
+<select class="form-control" ng-model="control.search{if $filter->isStrict}Strict{/if}.{$modelName}" ng-change="control.searchChanged()">
+	<option value>{$filter->prompt}</option>
+	<option n:foreach="$filter->items as $key => $value" value="{$key}">{$value}</option>
+</select>
+
+{/define}
