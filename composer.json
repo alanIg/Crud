@@ -17,8 +17,6 @@
 		"nette/nette": "~2.2.2"
     },
     "autoload": {
-        "psr-0": {
-            "Crud": "src"
-        }
-    }
+		"classmap": ["src/"]
+	}
 }
