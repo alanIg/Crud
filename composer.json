@@ -1,5 +1,5 @@
 {
-    "name": "TomasVodrazka/Crud",
+    "name": "tomas-vodrazka/crud",
     "type": "library",
     "description": "Crud operations fot Nette Framework",
     "keywords": ["nette","crud"],
