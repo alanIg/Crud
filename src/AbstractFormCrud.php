@@ -11,7 +11,7 @@ abstract class AbstractFormCrud extends AbstractPermissionCheckCrud {
 
     /**
      *
-     * @var Model\AbstractManager 
+     * @var AbstractManager 
      */
     protected $manager;
     protected $formFactory;
@@ -59,7 +59,7 @@ abstract class AbstractFormCrud extends AbstractPermissionCheckCrud {
 	$this->checkEditPermissons();
 	$form = $this->createEditForm();
 	$form->addSubmit('edit', $this->editButtonLabel)->onClick[] = array($this, 'editFormSubmitted');
-	\App\Model\AbstractFormFactory::setupFormRenderingBootstrap($form);
+	AbstractFormFactory::setupFormRenderingBootstrap($form);
 	$this->template->renderEdit = true;
 	return $form;
     }
@@ -89,7 +89,7 @@ abstract class AbstractFormCrud extends AbstractPermissionCheckCrud {
 	$this->checkAddPermissons();
 	$form = $this->createAddForm();
 	$form->addSubmit('add', $this->addButtonLabel)->onClick[] = array($this, 'addFormSubmitted');
-	\App\Model\AbstractFormFactory::setupFormRenderingBootstrap($form);
+	AbstractFormFactory::setupFormRenderingBootstrap($form);
 	$this->template->renderAdd = true;
 	return $form;
     }
