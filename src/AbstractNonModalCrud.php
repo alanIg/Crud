@@ -14,6 +14,7 @@ abstract class AbstractNonModalCrud extends AbstractAngularCrud {
 
     public function render() {
 	$template = $this->template;
+	$template->renderAddButton = $this->renderAddButton;
 	$template->rowsLabel = $this->rowsLabel;
 	$template->addLabel = $this->addLabel;
 	$template->renderViewRows = $this->renderViewRows;

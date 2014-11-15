@@ -9,7 +9,7 @@ namespace TomasVodrazka\Crud;
  */
 abstract class AbstractModalCrud extends \TomasVodrazka\Crud\AbstractAngularCrud {
 
-    public $renderAddButton = true;
+    
     
     protected function getModalBase() {
 	return __DIR__ . '/modalBase.latte';

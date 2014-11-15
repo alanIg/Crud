@@ -10,6 +10,7 @@ namespace TomasVodrazka\Crud;
 abstract class AbstractAngularCrud extends AbstractFormCrud {
 
     protected $columnsProvider;
+	public $renderAddButton = true;
 
     public function handleSendJson() {
 	$this->sendJsonResponse($this->getRowsArrayWithLinks());
