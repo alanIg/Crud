@@ -1,4 +1,4 @@
-<p><a n:href="add!" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span> {$addLabel}</a></p>
+<p n:if="$renderAddButton"><a n:href="add!" class="btn btn-success btn-xs"><span class="glyphicon glyphicon-plus"></span> {$addLabel}</a></p>
 
 
 <div n:foreach="$flashes as $flash" class="alert {$flash->type} alert-dismissible">
