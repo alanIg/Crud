@@ -7,7 +7,7 @@ namespace TomasVodrazka\Crud\ImageProcessors;
  *
  * @author TomU
  */
-class DefaultImageProcessor extends \GSObject implements IImageProcessor {
+class DefaultImageProcessor implements IImageProcessor {
 
 	public $maxWidth;
 	public $maxHeight;
