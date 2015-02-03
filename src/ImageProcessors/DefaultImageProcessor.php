@@ -1,6 +1,6 @@
 <?php
 
-namespace ImageProcessors;
+namespace TomasVodrazka\Crud\ImageProcessors;
 
 /**
  * Description of PhotoProcessor
