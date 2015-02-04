@@ -13,19 +13,22 @@ class DefaultImageProcessor implements IImageProcessor {
 	public $maxHeight;
 	public $maxThumbWidth;
 	public $maxThumbHeight;
+	public $fullPath;
 	public $path;
-	public $thumbPrefix = 'n_';
+	public $thumbPrefix;
 
 
-	function __construct($maxWidth, $maxHeight, $maxThumbWidth, $maxThumbHeight, $path) {
+	function __construct($maxWidth, $maxHeight, $maxThumbWidth, $maxThumbHeight, $fullPath, $path, $thumbPrefix = '_n') {
 		$this->maxWidth = $maxWidth;
 		$this->maxHeight = $maxHeight;
 		$this->maxThumbWidth = $maxThumbWidth;
 		$this->maxThumbHeight = $maxThumbHeight;
+		$this->fullPath = $fullPath;
 		$this->path = $path;
+		$this->thumbPrefix = $thumbPrefix;
 	}
 
-	public function process(\Nette\Image $image, $name) {
+		public function process(\Nette\Image $image, $name) {
 		try {
 			$image->resize($this->maxWidth, $this->maxHeight, $this->resizeStrategy);
 			$image->save($this->path . $name);
