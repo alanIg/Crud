@@ -45,7 +45,9 @@ class DefaultImageProcessor implements IImageProcessor {
 	public function delete($name) {
 		if (is_file($this->fullPath . $name)) {
 			unlink($this->fullPath . $name);
+			return true;
 		}
+		return false;
 	}
 
 	protected function getResizeStrategy() {
