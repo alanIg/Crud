@@ -9,6 +9,8 @@ namespace TomasVodrazka\Crud\ImageProcessors;
 interface IImageProcessor {
 
 	public function process(\Nette\Image $image, $name);
+
+	public function delete($name);
 }
 
 ?>

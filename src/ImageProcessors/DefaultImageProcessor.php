@@ -14,27 +14,26 @@ class DefaultImageProcessor implements IImageProcessor {
 	public $maxThumbWidth;
 	public $maxThumbHeight;
 	public $fullPath;
-	public $path;
+	public $publicPath;
 	public $thumbPrefix;
 
-
-	function __construct($maxWidth, $maxHeight, $maxThumbWidth, $maxThumbHeight, $fullPath, $path, $thumbPrefix = '_n') {
+	function __construct($maxWidth, $maxHeight, $maxThumbWidth, $maxThumbHeight, $fullPath, $publicPath, $thumbPrefix = 'n_') {
 		$this->maxWidth = $maxWidth;
 		$this->maxHeight = $maxHeight;
 		$this->maxThumbWidth = $maxThumbWidth;
 		$this->maxThumbHeight = $maxThumbHeight;
 		$this->fullPath = $fullPath;
-		$this->path = $path;
+		$this->publicPath = $publicPath;
 		$this->thumbPrefix = $thumbPrefix;
 	}
 
-		public function process(\Nette\Image $image, $name) {
+	public function process(\Nette\Image $image, $name) {
 		try {
 			$image->resize($this->maxWidth, $this->maxHeight, $this->resizeStrategy);
-			$image->save($this->path . $name);
+			$image->save($this->fullPath . $name);
 			if ($this->maxThumbHeight !== null) {
 				$image->resize($this->maxThumbWidth, $this->maxThumbHeight, $this->resizeStrategy);
-				$image->save($this->path . $this->thumbPrefix . $name);
+				$image->save($this->fullPath . $this->thumbPrefix . $name);
 			}
 		} catch (Exception $exc) {
 			throw $exc;
@@ -42,8 +41,14 @@ class DefaultImageProcessor implements IImageProcessor {
 
 		return true;
 	}
-	
-	protected function getResizeStrategy(){
+
+	public function delete($name) {
+		if (is_file($this->fullPath . $name)) {
+			unlink($this->fullPath . $name);
+		}
+	}
+
+	protected function getResizeStrategy() {
 		return \Nette\Image::FIT;
 	}
 
