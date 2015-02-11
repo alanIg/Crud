@@ -32,7 +32,7 @@ class DefaultImageProcessor implements IImageProcessor {
 			$image->resize($this->maxWidth, $this->maxHeight, $this->getResizeStrategy());
 			$image->save($this->fullPath . $name);
 			if ($this->maxThumbHeight !== null) {
-				$image->resize($this->maxThumbWidth, $this->maxThumbHeight, $this->resizeStrategy);
+				$image->resize($this->maxThumbWidth, $this->maxThumbHeight, $this->getResizeStrategy());
 				$image->save($this->fullPath . $this->thumbPrefix . $name);
 			}
 		} catch (Exception $exc) {
