@@ -29,7 +29,7 @@ class DefaultImageProcessor implements IImageProcessor {
 
 	public function process(\Nette\Image $image, $name) {
 		try {
-			$image->resize($this->maxWidth, $this->maxHeight, $this->resizeStrategy);
+			$image->resize($this->maxWidth, $this->maxHeight, $this->getResizeStrategy());
 			$image->save($this->fullPath . $name);
 			if ($this->maxThumbHeight !== null) {
 				$image->resize($this->maxThumbWidth, $this->maxThumbHeight, $this->resizeStrategy);
