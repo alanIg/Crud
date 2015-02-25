@@ -171,6 +171,11 @@
 				"boolean": function (value) {
 					return value ? 'Ano' : 'Ne';
 				}
+				"date": function (value) {
+				   var d = new Date(value);
+				   return d.detDate() + ". " d.getMonth() + ". " + d.getFullYear();
+ 				}
+				
 			};
 			this.toggleSorting = function (field) {
 				if (control.sortingField === field) {

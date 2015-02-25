@@ -95,7 +95,7 @@ abstract class AbstractFormFactory {
 	 * @param Form $form
 	 * @param \Nette\Database\Table\IRow $row
 	 */
-	protected function setupDefaults($form, $row, $omit = array()) {
+	public function setupDefaults($form, $row, $omit = array()) {
 		foreach ($form->getControls() as $value) {
 			if (!in_array($value->getName(), $omit)) {
 				if (isset($row[$value->getName()])) {
